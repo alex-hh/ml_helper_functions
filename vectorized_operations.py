@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.linalg.linalg import norm
 
 
 def matrix_cosine_sims(M1, M2):
