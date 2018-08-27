@@ -1,4 +1,6 @@
 import numpy as np
+from Bio import SeqIO
+from Bio.motifs import jaspar
 
 def read_fasta(filepath, output_arr=False):
     names = []
@@ -26,3 +28,33 @@ def output_fasta(names, seqs, filepath='sequences.fa'):
         for name, seq in zip(names, seqs):
             fout.write('>{}\n'.format(name))
             fout.write(seq+'\n')
+            
+def jaspar2dict(motiffile, include_rc=False, pseudocount=0.8):
+  motif_dict = {}
+  with open(motiffile, 'r') as meme:
+    records = jaspar.read(meme, "jaspar")
+    for r in records:
+      r.pseudocounts = pseudocount
+      motif_dict[r.matrix_id] = r
+
+      if include_rc:
+        rc = r.reverse_complement()
+        rc.pseudocounts = pseudocount
+        rc.counts = Bio.motifs.matrix.FrequencyPositionMatrix(r.counts.alphabet, rc.counts)
+        motif_dict[r.matrix_id+'-rc'] = rc
+  return motif_dict
+
+def jaspar2list(motiffile, include_rc=False, pseudocount=0.8):
+  motif_list = []
+  with open(motiffile, 'r') as meme:
+    records = jaspar.read(meme, "jaspar")
+    for r in records:
+      r.pseudocounts = pseudocount
+      motif_list.append(r)
+
+      if include_rc:
+        rc = r.reverse_complement()
+        rc.pseudocounts = pseudocount
+        rc.counts = Bio.motifs.matrix.FrequencyPositionMatrix(r.counts.alphabet, rc.counts)
+        motif_list.append(rc)
+  return motif_list
