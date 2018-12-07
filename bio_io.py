@@ -3,6 +3,7 @@ from Bio import SeqIO
 from Bio.motifs import jaspar
 
 def read_fasta(filepath, output_arr=False):
+    # TODO handle end file
     names = []
     seqs = []
     seq = ''
@@ -19,6 +20,12 @@ def read_fasta(filepath, output_arr=False):
                 seq = ''
             else:
                 seq += line.rstrip('\n')
+        if seq: # handle last seq in file
+            names.append(name)
+            if output_arr:
+                seqs.append(np.array(list(seq)))
+            else:
+                seqs.append(seq)
     if output_arr:
         seqs = np.array(seqs)
     return names, seqs
